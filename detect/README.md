@@ -4,8 +4,8 @@ The Detect function defines appropriate activities to identify the occurrence of
 
 ## Subcategories
 
-### DE.AE - Anomalies and Events
-AI-powered threat detection, anomaly detection systems, UEBA (User and Entity Behavior Analytics).
+### DE.CM - Continuous Monitoring
+Continuous monitoring strategies, AI-driven surveillance, real-time threat intelligence, network and system monitoring.
 
-### DE.CM - Security Continuous Monitoring
-Continuous monitoring strategies, AI-driven surveillance, real-time threat intelligence.
+### DE.AE - Adverse Event Analysis
+AI-powered threat detection, anomaly detection systems, UEBA (User and Entity Behavior Analytics), security event correlation.
