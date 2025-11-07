@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cybersecurity Insights by NIST CSF 2.0 Framework</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --govern-color: #667eea;
+            --identify-color: #0f3460;
+            --protect-color: #16a085;
+            --detect-color: #e67e22;
+            --respond-color: #e74c3c;
+            --recover-color: #9b59b6;
+            --text-color: #333;
+            --light-bg: #f8f9fa;
+            --white: #ffffff;
+            --border-color: #e0e0e0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: var(--white);
+            padding: 60px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+        }
+
+        /* Header Styles */
+        .site-header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 4px solid var(--govern-color);
+        }
+
+        .site-header h1 {
+            font-size: 2.5em;
+            color: var(--govern-color);
+            margin-bottom: 15px;
+            font-weight: 300;
+        }
+
+        .site-header .subtitle {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .site-header .description {
+            max-width: 800px;
+            margin: 20px auto 0;
+            font-size: 1em;
+            line-height: 1.8;
+            color: #555;
+            text-align: left;
+            padding: 20px;
+            background: var(--light-bg);
+            border-radius: 8px;
+        }
+
+        /* Framework Overview */
+        .framework-intro {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 8px;
+            margin-bottom: 50px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .framework-intro h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            font-weight: 300;
+        }
+
+        .framework-intro p {
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        /* Category Sections */
+        .csf-category {
+            margin-bottom: 60px;
+            padding: 30px;
+            border-radius: 8px;
+            background: var(--light-bg);
+            border-left: 6px solid;
+        }
+
+        .csf-category.govern { border-left-color: var(--govern-color); }
+        .csf-category.identify { border-left-color: var(--identify-color); }
+        .csf-category.protect { border-left-color: var(--protect-color); }
+        .csf-category.detect { border-left-color: var(--detect-color); }
+        .csf-category.respond { border-left-color: var(--respond-color); }
+        .csf-category.recover { border-left-color: var(--recover-color); }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .category-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            margin-right: 20px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .govern .category-icon { background: linear-gradient(135deg, var(--govern-color), #764ba2); }
+        .identify .category-icon { background: linear-gradient(135deg, var(--identify-color), #16213e); }
+        .protect .category-icon { background: linear-gradient(135deg, var(--protect-color), #1abc9c); }
+        .detect .category-icon { background: linear-gradient(135deg, var(--detect-color), #d35400); }
+        .respond .category-icon { background: linear-gradient(135deg, var(--respond-color), #c0392b); }
+        .recover .category-icon { background: linear-gradient(135deg, var(--recover-color), #8e44ad); }
+
+        .category-title {
+            flex: 1;
+        }
+
+        .category-title h2 {
+            font-size: 1.8em;
+            margin-bottom: 5px;
+            color: var(--text-color);
+        }
+
+        .category-title .category-code {
+            font-size: 0.9em;
+            color: #666;
+            font-weight: normal;
+        }
+
+        .category-description {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: white;
+            border-radius: 6px;
+            font-size: 1em;
+            line-height: 1.7;
+            color: #555;
+        }
+
+        /* Blog Posts Grid */
+        .blog-posts {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .blog-card {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .blog-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .govern .blog-card:hover { border-color: var(--govern-color); }
+        .identify .blog-card:hover { border-color: var(--identify-color); }
+        .protect .blog-card:hover { border-color: var(--protect-color); }
+        .detect .blog-card:hover { border-color: var(--detect-color); }
+        .respond .blog-card:hover { border-color: var(--respond-color); }
+        .recover .blog-card:hover { border-color: var(--recover-color); }
+
+        .blog-card h3 {
+            font-size: 1.4em;
+            margin-bottom: 10px;
+            line-height: 1.3;
+        }
+
+        .blog-card h3 a {
+            color: var(--text-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .govern .blog-card h3 a:hover { color: var(--govern-color); }
+        .identify .blog-card h3 a:hover { color: var(--identify-color); }
+        .protect .blog-card h3 a:hover { color: var(--protect-color); }
+        .detect .blog-card h3 a:hover { color: var(--detect-color); }
+        .respond .blog-card h3 a:hover { color: var(--respond-color); }
+        .recover .blog-card h3 a:hover { color: var(--recover-color); }
+
+        .blog-meta {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .blog-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .blog-excerpt {
+            color: #555;
+            line-height: 1.7;
+            margin-bottom: 15px;
+        }
+
+        .read-more {
+            display: inline-block;
+            padding: 10px 20px;
+            background: var(--text-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.9em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .govern .read-more { background: linear-gradient(135deg, var(--govern-color), #764ba2); }
+        .identify .read-more { background: linear-gradient(135deg, var(--identify-color), #16213e); }
+        .protect .read-more { background: linear-gradient(135deg, var(--protect-color), #1abc9c); }
+        .detect .read-more { background: linear-gradient(135deg, var(--detect-color), #d35400); }
+        .respond .read-more { background: linear-gradient(135deg, var(--respond-color), #c0392b); }
+        .recover .read-more { background: linear-gradient(135deg, var(--recover-color), #8e44ad); }
+
+        .read-more:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            font-style: italic;
+            background: white;
+            border-radius: 8px;
+            border: 2px dashed var(--border-color);
+        }
+
+        /* Footer */
+        .site-footer {
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 2px solid var(--border-color);
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .site-footer a {
+            color: var(--govern-color);
+            text-decoration: none;
+        }
+
+        .site-footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            .site-header h1 {
+                font-size: 1.8em;
+            }
+
+            .blog-posts {
+                grid-template-columns: 1fr;
+            }
+
+            .category-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .category-icon {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Site Header -->
+        <header class="site-header">
+            <h1>Cybersecurity Framework Blog</h1>
+            <p class="subtitle">Technical insights organized by NIST CSF 2.0</p>
+            <div class="description">
+                <strong>About this blog:</strong> Security Medic Consulting provides expert analysis and practical guidance on cybersecurity topics, organized according to the NIST Cybersecurity Framework 2.0. Each article is categorized by its primary CSF function to help security professionals find relevant content aligned with their organizational security strategy.
+            </div>
+        </header>
+
+        <!-- Framework Introduction -->
+        <section class="framework-intro">
+            <h2>NIST Cybersecurity Framework 2.0</h2>
+            <p>The NIST CSF 2.0 provides a comprehensive structure for managing cybersecurity risks across all sectors. The framework organizes security activities into six core functions that work together to create a holistic security posture:</p>
+            <p><strong>GOVERN</strong> establishes and monitors organizational cybersecurity risk management strategy, expectations, and policy. <strong>IDENTIFY</strong> develops understanding of managing cybersecurity risk to systems, people, assets, data, and capabilities. <strong>PROTECT</strong> implements safeguards to ensure delivery of critical services. <strong>DETECT</strong> develops and implements activities to identify cybersecurity events. <strong>RESPOND</strong> takes action regarding detected cybersecurity incidents. <strong>RECOVER</strong> restores capabilities or services impaired due to cybersecurity incidents.</p>
+        </section>
+
+        <!-- GOVERN Category -->
+        <section class="csf-category govern">
+            <div class="category-header">
+                <div class="category-icon">GV</div>
+                <div class="category-title">
+                    <h2>GOVERN <span class="category-code">(GV)</span></h2>
+                </div>
+            </div>
+            <div class="category-description">
+                <strong>Governance</strong> establishes and monitors the organization's cybersecurity risk management strategy, expectations, and policy. This function addresses organizational context, risk management strategy, roles and responsibilities, policies, and oversight. GOVERN is the newest core function in CSF 2.0, emphasizing the critical role of cybersecurity governance at the executive level.
+            </div>
+            <div class="blog-posts">
+                <article class="blog-card">
+                    <h3><a href="ai_cybersecurity_blog.html">AI in Cybersecurity: The Dual-Use Arms Race</a></h3>
+                    <div class="blog-meta">
+                        <span>📅 November 7, 2025</span>
+                        <span>👤 Jim Barrett</span>
+                    </div>
+                    <p class="blog-excerpt">
+                        A strategic analysis of how AI is fundamentally reshaping the cybersecurity landscape, serving as both weapon and shield. This executive briefing examines offensive AI threats, defensive capabilities, and the governance challenges facing organizational leadership in the age of AI-driven cyber conflict.
+                    </p>
+                    <a href="ai_cybersecurity_blog.html" class="read-more">Read Article →</a>
+                </article>
+            </div>
+        </section>
+
+        <!-- IDENTIFY Category -->
+        <section class="csf-category identify">
+            <div class="category-header">
+                <div class="category-icon">ID</div>
+                <div class="category-title">
+                    <h2>IDENTIFY <span class="category-code">(ID)</span></h2>
+                </div>
+            </div>
+            <div class="category-description">
+                <strong>Identify</strong> focuses on developing organizational understanding to manage cybersecurity risk to systems, people, assets, data, and capabilities. This includes asset management, business environment analysis, governance structure, risk assessment, risk management strategy, and supply chain risk management.
+            </div>
+            <div class="empty-state">
+                Articles coming soon. Check back for insights on risk assessment, asset management, and threat intelligence.
+            </div>
+        </section>
+
+        <!-- PROTECT Category -->
+        <section class="csf-category protect">
+            <div class="category-header">
+                <div class="category-icon">PR</div>
+                <div class="category-title">
+                    <h2>PROTECT <span class="category-code">(PR)</span></h2>
+                </div>
+            </div>
+            <div class="category-description">
+                <strong>Protect</strong> outlines safeguards to ensure delivery of critical infrastructure services. This function supports the ability to limit or contain the impact of potential cybersecurity events, covering identity management, access control, awareness and training, data security, protective technology, and maintenance.
+            </div>
+            <div class="empty-state">
+                Articles coming soon. Check back for insights on access controls, encryption, security architecture, and protective technologies.
+            </div>
+        </section>
+
+        <!-- DETECT Category -->
+        <section class="csf-category detect">
+            <div class="category-header">
+                <div class="category-icon">DE</div>
+                <div class="category-title">
+                    <h2>DETECT <span class="category-code">(DE)</span></h2>
+                </div>
+            </div>
+            <div class="category-description">
+                <strong>Detect</strong> defines activities to identify the occurrence of a cybersecurity event in a timely manner. This includes anomaly detection, continuous monitoring, detection processes, and threat intelligence integration to enable rapid discovery of cybersecurity events.
+            </div>
+            <div class="empty-state">
+                Articles coming soon. Check back for insights on threat detection, security monitoring, anomaly detection, and incident discovery.
+            </div>
+        </section>
+
+        <!-- RESPOND Category -->
+        <section class="csf-category respond">
+            <div class="category-header">
+                <div class="category-icon">RS</div>
+                <div class="category-title">
+                    <h2>RESPOND <span class="category-code">(RS)</span></h2>
+                </div>
+            </div>
+            <div class="category-description">
+                <strong>Respond</strong> includes activities to take action regarding a detected cybersecurity incident. This function supports the ability to contain the impact of potential cybersecurity incidents, including response planning, communications, analysis, mitigation, and improvements.
+            </div>
+            <div class="empty-state">
+                Articles coming soon. Check back for insights on incident response, containment strategies, forensics, and crisis management.
+            </div>
+        </section>
+
+        <!-- RECOVER Category -->
+        <section class="csf-category recover">
+            <div class="category-header">
+                <div class="category-icon">RC</div>
+                <div class="category-title">
+                    <h2>RECOVER <span class="category-code">(RC)</span></h2>
+                </div>
+            </div>
+            <div class="category-description">
+                <strong>Recover</strong> identifies activities to maintain plans for resilience and to restore capabilities or services impaired due to a cybersecurity incident. This function supports timely recovery to normal operations, including recovery planning, improvements, and communications.
+            </div>
+            <div class="empty-state">
+                Articles coming soon. Check back for insights on business continuity, disaster recovery, resilience planning, and lessons learned.
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="site-footer">
+            <p><strong>Security Medic Consulting</strong> | Fractional CISO Services for the Hudson Valley</p>
+            <p>Expert cybersecurity guidance for small and medium businesses</p>
+            <p style="margin-top: 15px;">
+                Blogs Categorized Based on the NIST Cybersecurity Framework 2.0
+            </p>
+        </footer>
+    </div>
+</body>
+</html>
