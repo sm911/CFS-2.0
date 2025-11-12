@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Reverse Engineering: A Guide for SMB Leaders</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .section {
+            background: white;
+            padding: 30px;
+            margin-bottom: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .section h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .section h3 {
+            color: #764ba2;
+            font-size: 1.5em;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        
+        .business-value {
+            background: #e8f5e9;
+            border-left: 5px solid #4caf50;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .business-value h4 {
+            color: #2e7d32;
+            margin-bottom: 10px;
+        }
+        
+        .warning-box {
+            background: #fff3e0;
+            border-left: 5px solid #ff9800;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .warning-box h4 {
+            color: #e65100;
+            margin-bottom: 10px;
+        }
+        
+        .diagram {
+            background: #f5f5f5;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 25px 0;
+            text-align: center;
+        }
+        
+        .stack-visual {
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: center;
+            margin: 20px auto;
+            width: 300px;
+        }
+        
+        .stack-item {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            margin: 5px;
+            border-radius: 5px;
+            width: 100%;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+        
+        .process-flow {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+        
+        .flow-step {
+            background: white;
+            border: 3px solid #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px;
+            min-width: 150px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .flow-step::after {
+            content: '→';
+            position: absolute;
+            right: -30px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2em;
+            color: #667eea;
+        }
+        
+        .flow-step:last-child::after {
+            content: '';
+        }
+        
+        .flow-step h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .key-concepts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        .concept-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .concept-card h4 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+        
+        .study-guide {
+            background: #e3f2fd;
+            border-left: 5px solid #2196f3;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .study-guide h4 {
+            color: #1565c0;
+            margin-bottom: 10px;
+        }
+        
+        ul, ol {
+            margin-left: 25px;
+            margin-top: 15px;
+        }
+        
+        li {
+            margin-bottom: 10px;
+        }
+        
+        .architecture-diagram {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .arch-layer {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .threat-matrix {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 25px 0;
+        }
+        
+        .threat-item {
+            background: #ffebee;
+            border-left: 5px solid #f44336;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        
+        .threat-item h5 {
+            color: #c62828;
+            margin-bottom: 8px;
+        }
+        
+        .cta-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .cta-box h3 {
+            color: white;
+            margin-bottom: 15px;
+        }
+        
+        @media print {
+            body {
+                background: white;
+            }
+            .section {
+                page-break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
+        
+        .toc {
+            background: #f5f5f5;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .toc h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .toc ul {
+            list-style-type: none;
+            margin-left: 0;
+        }
+        
+        .toc li {
+            padding: 8px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .toc a {
+            color: #764ba2;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .toc a:hover {
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔍 Understanding Reverse Engineering</h1>
+            <p>A Strategic Guide for SMB Security Leaders</p>
+            <p style="font-size: 0.9em; margin-top: 10px;">Prepared by Security Medic Consulting</p>
+        </header>
+
+        <div class="toc section">
+            <h3>📋 Training Roadmap</h3>
+            <ul>
+                <li><a href="#intro">1. Executive Overview: Why This Matters to Your Business</a></li>
+                <li><a href="#what-is">2. What Is Reverse Engineering?</a></li>
+                <li><a href="#core-concepts">3. Core Technical Concepts (Simplified)</a></li>
+                <li><a href="#business-applications">4. Business Applications & Use Cases</a></li>
+                <li><a href="#threats">5. The Threat Landscape: Anti-Reversing Techniques</a></li>
+                <li><a href="#protection">6. Protecting Your Organization</a></li>
+                <li><a href="#action-plan">7. Your Action Plan</a></li>
+            </ul>
+        </div>
+
+        <div id="intro" class="section">
+            <h2>1. Executive Overview: Why This Matters to Your Business</h2>
+            
+            <p>As a business leader, you don't need to become a reverse engineering expert. But understanding what it is—and why it matters—is critical to protecting your organization in today's threat landscape.</p>
+            
+            <div class="business-value">
+                <h4>💼 The Business Case</h4>
+                <p><strong>Reverse engineering is the digital equivalent of taking apart a competitor's product to understand how it works.</strong> In cybersecurity, it's how we:</p>
+                <ul>
+                    <li>Understand malware threats targeting your industry</li>
+                    <li>Verify that third-party software doesn't contain backdoors</li>
+                    <li>Debug legacy systems when vendors disappear</li>
+                    <li>Protect your intellectual property from theft</li>
+                    <li>Ensure compliance with security standards</li>
+                </ul>
+            </div>
+
+            <div class="warning-box">
+                <h4>⚠️ The Risk Reality</h4>
+                <p>Every day, attackers use reverse engineering to:</p>
+                <ul>
+                    <li>Find vulnerabilities in your software before you do</li>
+                    <li>Bypass your security controls</li>
+                    <li>Steal your proprietary algorithms</li>
+                    <li>Create targeted malware for your industry</li>
+                </ul>
+                <p><strong>Understanding this skill helps you defend against those who would use it against you.</strong></p>
+            </div>
+
+            <h3>The Three Key Questions</h3>
+            <ol>
+                <li><strong>What is it?</strong> Analyzing software without access to source code to understand its behavior</li>
+                <li><strong>Why does it matter?</strong> It's both a critical defense tool and an attack method you must understand</li>
+                <li><strong>What should I do?</strong> Implement controls, train your team, and work with experts (like us)</li>
+            </ol>
+        </div>
+
+        <div id="what-is" class="section">
+            <h2>2. What Is Reverse Engineering?</h2>
+            
+            <div class="diagram">
+                <h3>The Digital Detective Story</h3>
+                <div class="process-flow">
+                    <div class="flow-step">
+                        <h4>Black Box</h4>
+                        <p>Compiled software (no source code)</p>
+                    </div>
+                    <div class="flow-step">
+                        <h4>Analysis</h4>
+                        <p>Study behavior & structure</p>
+                    </div>
+                    <div class="flow-step">
+                        <h4>Understanding</h4>
+                        <p>Figure out how it works</p>
+                    </div>
+                    <div class="flow-step">
+                        <h4>Documentation</h4>
+                        <p>Create the "blueprint"</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3>The Analogy That Makes It Click</h3>
+            <p>Imagine receiving a locked safe without the combination. Reverse engineering is like:</p>
+            <ul>
+                <li>Studying how the lock mechanism responds to different inputs</li>
+                <li>Listening for clicks and feeling for resistance</li>
+                <li>Building a mental model of the internal structure</li>
+                <li>Eventually understanding—or even opening—the safe</li>
+            </ul>
+            <p><strong>You're creating the blueprint when all you have is the finished product.</strong></p>
+
+            <h3>Not Just for Hackers</h3>
+            <p>Legitimate business uses include:</p>
+            <div class="key-concepts">
+                <div class="concept-card">
+                    <h4>🔒 Security Analysis</h4>
+                    <p>Finding vulnerabilities before attackers do</p>
+                </div>
+                <div class="concept-card">
+                    <h4>🦠 Malware Analysis</h4>
+                    <p>Understanding threats to protect your network</p>
+                </div>
+                <div class="concept-card">
+                    <h4>🔧 Legacy Support</h4>
+                    <p>Maintaining old systems when vendors vanish</p>
+                </div>
+                <div class="concept-card">
+                    <h4>✅ Compliance</h4>
+                    <p>Verifying third-party software security</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="core-concepts" class="section">
+            <h2>3. Core Technical Concepts (Simplified)</h2>
+            
+            <p>You don't need to master these concepts, but understanding them helps you make informed security decisions.</p>
+
+            <h3>The Stack: How Programs Remember Things</h3>
+            <div class="diagram">
+                <p><strong>Think of it like a pile of books on your desk</strong></p>
+                <div class="stack-visual">
+                    <div class="stack-item">First Task (Bottom)</div>
+                    <div class="stack-item">Second Task</div>
+                    <div class="stack-item">Current Task (Top)</div>
+                </div>
+                <p style="margin-top: 20px;"><strong>Last In, First Out (LIFO)</strong><br>
+                The last task added is the first one completed</p>
+            </div>
+
+            <div class="study-guide">
+                <h4>📚 Why This Matters to Your Business</h4>
+                <p><strong>Stack-based attacks</strong> (like buffer overflows) are among the most common and dangerous vulnerabilities. When developers don't manage the "stack" properly, attackers can inject malicious code. Understanding this concept helps you:</p>
+                <ul>
+                    <li>Ask better questions during security audits</li>
+                    <li>Understand vulnerability reports from penetration testers</li>
+                    <li>Make informed decisions about code review requirements</li>
+                </ul>
+            </div>
+
+            <h3>How Programs Make Decisions</h3>
+            <div class="diagram">
+                <h4>The Gatekeeper Instruction</h4>
+                <p style="text-align: left; max-width: 600px; margin: 20px auto;">
+                    Programs use simple yes/no checks to control behavior:<br><br>
+                    <strong>Example: Password Check</strong><br>
+                    ➜ Is password correct? <strong>YES</strong> → Allow access<br>
+                    ➜ Is password correct? <strong>NO</strong> → Show error message<br><br>
+                    <strong>Attack Method:</strong> Attackers can flip these checks, turning "NO" into "YES"
+                </p>
+            </div>
+
+            <h3>The Architecture: Layers of Software</h3>
+            <div class="architecture-diagram">
+                <div class="arch-layer" style="grid-column: 1 / -1;">
+                    User Interface (What you see)
+                </div>
+                <div class="arch-layer" style="grid-column: 1 / -1;">
+                    Application Logic (Business rules)
+                </div>
+                <div class="arch-layer" style="grid-column: 1 / -1;">
+                    System Libraries (Shared functions)
+                </div>
+                <div class="arch-layer" style="grid-column: 1 / -1;">
+                    Operating System (Windows/Linux/Mac)
+                </div>
+                <div class="arch-layer" style="grid-column: 1 / -1;">
+                    Hardware (CPU, Memory, Disk)
+                </div>
+            </div>
+
+            <p><strong>Key Insight:</strong> Reverse engineers can analyze software at any of these layers. The deeper they go, the more powerful—and complex—the analysis becomes.</p>
+        </div>
+
+        <div id="business-applications" class="section">
+            <h2>4. Business Applications & Use Cases</h2>
+
+            <h3>When Your Organization Might Need Reverse Engineering</h3>
+
+            <div class="key-concepts">
+                <div class="concept-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                    <h4>🔍 Malware Incident Response</h4>
+                    <p>Your network is infected. Before you can clean it, you need to understand what the malware does, how it spreads, and what data it's targeting.</p>
+                </div>
+                
+                <div class="concept-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                    <h4>🔒 Third-Party Software Vetting</h4>
+                    <p>You're considering a new vendor solution. Before trusting it with sensitive data, you need to verify it doesn't contain backdoors or security flaws.</p>
+                </div>
+                
+                <div class="concept-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                    <h4>⚖️ Legal & IP Protection</h4>
+                    <p>A competitor's product looks suspiciously like yours. You need to determine if they've stolen your algorithms or trade secrets.</p>
+                </div>
+                
+                <div class="concept-card" style="background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);">
+                    <h4>🏗️ Legacy System Maintenance</h4>
+                    <p>A critical application breaks, but the vendor went out of business years ago. You need to understand and fix it without source code.</p>
+                </div>
+            </div>
+
+            <div class="business-value">
+                <h4>💰 ROI Perspective</h4>
+                <p><strong>Consider the costs of NOT understanding software behavior:</strong></p>
+                <ul>
+                    <li>Average data breach cost: <strong>$4.45 million</strong> (IBM 2023)</li>
+                    <li>Average ransomware downtime: <strong>21 days</strong></li>
+                    <li>Cost of legacy system failure: Often <strong>immeasurable</strong> (lost revenue, compliance violations)</li>
+                </ul>
+                <p style="margin-top: 15px;">Investing in reverse engineering capabilities—whether in-house or through fractional CISO services—is far less expensive than dealing with these scenarios unprepared.</p>
+            </div>
+
+            <h3>Real-World Example: The Password Length Flaw</h3>
+            <div class="diagram">
+                <p style="text-align: left; max-width: 700px; margin: 0 auto;"><strong>Scenario:</strong> A company deploys expensive software that claims "military-grade encryption" for password protection.</p>
+                <p style="text-align: left; max-width: 700px; margin: 20px auto;"><strong>Analysis:</strong> Through reverse engineering, we discover the software only checks if the password is 16 characters long—not what those characters are!</p>
+                <p style="text-align: left; max-width: 700px; margin: 20px auto;"><strong>Result:</strong> Any 16-character string (like "aaaaaaaaaaaaaaaa") grants access. The vendor's security claims were fraudulent.</p>
+                <p style="text-align: left; max-width: 700px; margin: 20px auto; color: #c62828;"><strong>Impact:</strong> Without this analysis, the company would have trusted a fundamentally insecure system with sensitive data.</p>
+            </div>
+        </div>
+
+        <div id="threats" class="section">
+            <h2>5. The Threat Landscape: Anti-Reversing Techniques</h2>
+
+            <p>Just as you can use reverse engineering to understand software, <strong>attackers use it to break your software</strong>. And modern malware uses sophisticated "anti-reversing" techniques to hide its behavior.</p>
+
+            <h3>The Cat and Mouse Game</h3>
+            <div class="threat-matrix">
+                <div class="threat-item">
+                    <h5>🎭 Debugger Detection</h5>
+                    <p>Malware checks if it's being analyzed in a debugging tool and changes behavior or shuts down</p>
+                </div>
+                <div class="threat-item">
+                    <h5>⏱️ Time Checks</h5>
+                    <p>Measures execution speed—if it's too slow (because a debugger is attached), the malware goes dormant</p>
+                </div>
+                <div class="threat-item">
+                    <h5>🖥️ VM Detection</h5>
+                    <p>Identifies if it's running in a virtual machine (where analysts typically study malware) and refuses to activate</p>
+                </div>
+                <div class="threat-item">
+                    <h5>🔐 Code Encryption</h5>
+                    <p>Encrypts its own code and only decrypts at runtime, hiding its true behavior from static analysis</p>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <h4>⚠️ What This Means for Your Organization</h4>
+                <p>Modern threats are sophisticated. They're designed to:</p>
+                <ul>
+                    <li>Evade detection by traditional antivirus</li>
+                    <li>Behave differently when being analyzed vs. in production</li>
+                    <li>Remain hidden for extended periods ("dwell time")</li>
+                    <li>Adapt their tactics based on the environment</li>
+                </ul>
+                <p><strong>This is why you need experts who understand these techniques and can counter them.</strong></p>
+            </div>
+
+            <h3>Defense in Depth Strategy</h3>
+            <div class="process-flow">
+                <div class="flow-step">
+                    <h4>Detect</h4>
+                    <p>Behavioral analysis, EDR, SIEM</p>
+                </div>
+                <div class="flow-step">
+                    <h4>Isolate</h4>
+                    <p>Sandbox, network segmentation</p>
+                </div>
+                <div class="flow-step">
+                    <h4>Analyze</h4>
+                    <p>Reverse engineering, threat intel</p>
+                </div>
+                <div class="flow-step">
+                    <h4>Respond</h4>
+                    <p>Remediate, patch, harden</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="protection" class="section">
+            <h2>6. Protecting Your Organization</h2>
+
+            <h3>Two-Sided Protection Strategy</h3>
+            
+            <div class="business-value">
+                <h4>🛡️ Defensive Use (Understanding Threats)</h4>
+                <ul>
+                    <li><strong>Malware Analysis Capability:</strong> Partner with or employ experts who can reverse engineer threats targeting your industry</li>
+                    <li><strong>Incident Response Readiness:</strong> Have processes in place to analyze suspicious executables before they spread</li>
+                    <li><strong>Third-Party Risk Management:</strong> Vet software vendors' security claims through independent analysis</li>
+                    <li><strong>Legacy System Documentation:</strong> Document critical systems through reverse engineering before knowledge is lost</li>
+                </ul>
+            </div>
+
+            <div class="warning-box">
+                <h4>🔒 Protective Measures (Defending Your IP)</h4>
+                <ul>
+                    <li><strong>Code Obfuscation:</strong> Make your proprietary software harder to reverse engineer</li>
+                    <li><strong>Anti-Tampering Controls:</strong> Implement checks that detect modification attempts</li>
+                    <li><strong>Secure Development Practices:</strong> Don't rely solely on obscurity—use real encryption and access controls</li>
+                    <li><strong>Legal Protections:</strong> Combine technical measures with strong licensing terms and patents</li>
+                </ul>
+            </div>
+
+            <h3>Recommended Controls for SMBs</h3>
+            <div class="key-concepts">
+                <div class="concept-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <h4>1. Access Control</h4>
+                    <p>Limit who can analyze or modify your software executables. Use code signing.</p>
+                </div>
+                <div class="concept-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                    <h4>2. Monitoring</h4>
+                    <p>Log and alert on attempts to use debugging tools or analyze your software.</p>
+                </div>
+                <div class="concept-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                    <h4>3. Analysis Capability</h4>
+                    <p>Partner with a fractional CISO or security firm that can reverse engineer threats.</p>
+                </div>
+                <div class="concept-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                    <h4>4. Security Training</h4>
+                    <p>Ensure your development team understands secure coding to prevent reverse engineering vulnerabilities.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="action-plan" class="section">
+            <h2>7. Your Action Plan</h2>
+
+            <h3>Immediate Steps (This Week)</h3>
+            <ol>
+                <li><strong>Inventory Your Software Assets:</strong> List all custom or proprietary software that contains business logic or trade secrets</li>
+                <li><strong>Assess Third-Party Risk:</strong> Identify which vendor applications have access to sensitive data</li>
+                <li><strong>Review Incident Response Plan:</strong> Confirm you have a process for analyzing suspicious executables</li>
+                <li><strong>Establish Baseline:</strong> Document what "normal" looks like for critical applications</li>
+            </ol>
+
+            <h3>Short-Term Actions (This Month)</h3>
+            <ol>
+                <li><strong>Conduct Code Review:</strong> Have proprietary software reviewed for common vulnerabilities that reverse engineering could expose</li>
+                <li><strong>Implement Code Signing:</strong> Ensure all your software is digitally signed to prevent tampering</li>
+                <li><strong>Deploy Advanced Monitoring:</strong> Implement EDR or similar tools that can detect malicious behavior patterns</li>
+                <li><strong>Vendor Security Assessment:</strong> Require third-party vendors to demonstrate their anti-tampering controls</li>
+            </ol>
+
+            <h3>Long-Term Strategy (This Quarter)</h3>
+            <ol>
+                <li><strong>Build or Partner for Capability:</strong> Establish reverse engineering analysis capability through hiring, training, or fractional CISO partnership</li>
+                <li><strong>Red Team Exercise:</strong> Have ethical hackers attempt to reverse engineer your software to identify weaknesses</li>
+                <li><strong>Harden Applications:</strong> Implement obfuscation, anti-debugging, and runtime integrity checks in proprietary software</li>
+                <li><strong>Documentation Program:</strong> Create technical documentation for critical systems while knowledge is still available</li>
+            </ol>
+
+            <div class="study-guide">
+                <h4>📚 Continuing Education Resources</h4>
+                <ul>
+                    <li><strong>For Executives:</strong> SANS "What Works in Security Education" summits</li>
+                    <li><strong>For Technical Staff:</strong> Practical Malware Analysis courses, assembly language basics</li>
+                    <li><strong>For Developers:</strong> OWASP Secure Coding Guidelines, reverse engineering awareness training</li>
+                    <li><strong>Industry Reading:</strong> Threat intelligence reports specific to your sector</li>
+                </ul>
+            </div>
+
+            <div class="cta-box">
+                <h3>Need Help Implementing These Controls?</h3>
+                <p style="font-size: 1.2em; margin: 15px 0;">Security Medic Consulting offers fractional CISO services tailored to SMBs in the Hudson Valley region.</p>
+                <p>We provide:</p>
+                <ul style="list-style: none; margin: 15px 0;">
+                    <li>✓ Malware analysis and reverse engineering expertise</li>
+                    <li>✓ Third-party software security assessment</li>
+                    <li>✓ Incident response planning and execution</li>
+                    <li>✓ Security program development and compliance support</li>
+                </ul>
+                <p style="font-size: 1.1em; margin-top: 20px;"><strong>Let's schedule a consultation to discuss your specific needs.</strong></p>
+            </div>
+        </div>
+
+        <div class="section" style="background: #f5f5f5;">
+            <h2>Summary: Key Takeaways</h2>
+            <div class="key-concepts">
+                <div class="concept-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <h4>Understanding</h4>
+                    <p>Reverse engineering is both a critical defense tool and a potential threat vector</p>
+                </div>
+                <div class="concept-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                    <h4>Application</h4>
+                    <p>Used for malware analysis, third-party vetting, legacy support, and IP protection</p>
+                </div>
+                <div class="concept-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                    <h4>Threats</h4>
+                    <p>Modern attackers use sophisticated anti-reversing techniques to evade detection</p>
+                </div>
+                <div class="concept-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                    <h4>Action</h4>
+                    <p>Implement controls, build capability (in-house or through partners), and stay vigilant</p>
+                </div>
+            </div>
+            
+            <p style="text-align: center; margin-top: 30px; font-size: 1.1em;">
+                <strong>The question isn't whether reverse engineering affects your business—it's whether you'll be prepared when it does.</strong>
+            </p>
+        </div>
+
+        <footer style="text-align: center; padding: 30px; color: #666;">
+            <p style="font-size: 0.9em;">© 2025 Security Medic Consulting | Fractional CISO Services for Hudson Valley SMBs</p>
+            <p style="font-size: 0.85em; margin-top: 10px;">This training material is provided for educational purposes. For specific security advice, consult with qualified cybersecurity professionals.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Add smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
